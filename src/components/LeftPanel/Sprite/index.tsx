@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { faUndo, faVenus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVenus, faUndo } from '@fortawesome/free-solid-svg-icons';
+
+import { Button, PokeBall } from '../../shared';
 import Container, { ShinyButton } from './styles';
-import { Button } from '../../shared';
-import { PokeBall } from '../../shared';
-import { SpritesProps, SpriteProps } from './types';
+import { SpriteProps, SpritesProps } from './types';
 
 interface SpriteComponentProps {
-    sprites?: SpritesProps;
     name: string;
+    sprites?: SpritesProps;
+
     [key: string]: any;
 }
 
@@ -21,14 +23,7 @@ const Sprite = ({ sprites, name }: SpriteComponentProps) => {
     const [src, setSrc] = useState<string | null>('');
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        if (sprites) {
-            const source = buildImage(sprite);
-            setSrc(sprites[source]);
-        }
-    }, [sprite, sprites]);
-
-    function buildImage({ front, shiny, female }: SpriteProps): string {
+    const buildImage = useCallback(({ front, shiny, female }: SpriteProps): string => {
         const direction = front ? 'front' : 'back';
         const light = shiny ? '_shiny' : '_default';
         const gender = female ? '_female' : '';
@@ -37,31 +32,53 @@ const Sprite = ({ sprites, name }: SpriteComponentProps) => {
             return direction + gender;
         }
         return direction + light + gender;
-    }
+    }, []);
 
-    const handleChange = (attribute: string) => {
-        // make a copy and update its state
-        const spriteCopy = { ...sprite, [attribute]: !sprite[attribute] };
-        const source = buildImage(spriteCopy);
-
-        // run the bounce animiation if there is no avaliable sprite
-        if (sprites && !sprites[source]) {
-            setError(true);
-            return setTimeout(() => {
-                setError(false);
-            }, 500);
+    useEffect(() => {
+        if (sprites) {
+            const source = buildImage(sprite);
+            setSrc(sprites[source]);
         }
+    }, [sprite, sprites, buildImage]);
 
-        return setSprite({ ...sprite, [attribute]: !sprite[attribute] });
-    };
+    const handleChange = useCallback(
+        (attribute: string) => {
+            // make a copy and update its state
+            const spriteCopy = { ...sprite, [attribute]: !sprite[attribute] };
+            const source = buildImage(spriteCopy);
 
-    const renderScreen = () => {
+            // run the bounce animiation if there is no avaliable sprite
+            if (sprites && !sprites[source]) {
+                setError(true);
+                return setTimeout(() => {
+                    setError(false);
+                }, 500);
+            }
+
+            return setSprite({ ...sprite, [attribute]: !sprite[attribute] });
+        },
+        [sprite, sprites, buildImage],
+    );
+
+    const changeToShiny = useCallback(() => handleChange('shiny'), [handleChange]);
+
+    // registers change to shiny shortcut listener
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() === 's') changeToShiny();
+        };
+        document.addEventListener('keyup', handler);
+
+        return () => document.removeEventListener('keyup', handler);
+    }, [changeToShiny]);
+
+    const renderScreen = useCallback(() => {
         if (src) {
             return <img src={src} alt={name} />;
         }
 
         return <PokeBall nameClass="bigScreen" />;
-    };
+    }, [name, src]);
 
     return (
         <Container error={error}>
@@ -71,7 +88,7 @@ const Sprite = ({ sprites, name }: SpriteComponentProps) => {
                     <FontAwesomeIcon icon={faVenus} />
                 </Button>
 
-                <ShinyButton active={sprite.shiny} onClick={() => handleChange('shiny')} aria-label="Change to Shiny">
+                <ShinyButton active={sprite.shiny} onClick={changeToShiny} aria-label="Change to Shiny">
                     <div className="button">
                         <span className="button__mask"></span>
                         <span className="button__text">Shiny</span>
