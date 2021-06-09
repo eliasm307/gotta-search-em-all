@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { PokemonProps, SpeciesDataProps, ChangePokemonIndex } from '../components/shared/types';
-import { usePokemonIndex, usePokemonName } from './index';
+
+import { ChangePokemonIndex, PokemonProps, SpeciesDataProps } from '../components/shared/types';
 import { getUniqueItems } from '../helpers';
+import { usePokemonIndex, usePokemonName } from './index';
 
 // Settings
 const NUMBER_OF_POKEMONS = 807;
@@ -72,7 +73,7 @@ const usePokemon = () => {
                     });
 
                     setPokemon({
-                        ...pokemon,
+                        ...pokemon, // ? use function instead?
                         pokemonData,
                         speciesData,
                         pokemonDescriptions: descriptions,
