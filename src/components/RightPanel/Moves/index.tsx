@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
+
 import { faRandom } from '@fortawesome/free-solid-svg-icons';
-import Container from './styles';
-import MovesScreen from './MovesScreen';
-import { pickRandom } from '../../../helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { pickRandom, pickRandomIndex } from '../../../helpers';
 import { Button } from '../../shared';
 import { MoveInfoProps } from '../../shared/types';
-import { MovesProps, EntryProps } from './types';
-import { pickRandomIndex } from '../../../helpers';
+import MovesScreen from './MovesScreen';
+import Container from './styles';
+import { EntryProps, MovesProps } from './types';
 
 interface MovesComponentProps {
     moves?: MovesProps[];
@@ -16,6 +17,18 @@ interface MovesComponentProps {
 const Moves = ({ moves }: MovesComponentProps) => {
     const [moveInfo, setMoveInfo] = useState<MoveInfoProps | undefined>(undefined);
     const [loading, setLoading] = useState(true);
+
+    // Registers keydown event listener for random move shortcut
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
+                fetchMove(moves);
+            }
+        };
+        document.addEventListener('keydown', handler);
+
+        return () => document.removeEventListener('keydown', handler);
+    });
 
     useEffect(() => {
         fetchMove(moves);
