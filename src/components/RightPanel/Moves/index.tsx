@@ -20,14 +20,15 @@ const Moves = ({ moves }: MovesComponentProps) => {
 
     // Registers keydown event listener for random move shortcut
     useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
-                fetchMove(moves);
-            }
-        };
-        document.addEventListener('keydown', handler);
+        /** Checks CTRL + ALT + R */
+        const isRandomMoveShortcut = (e: KeyboardEvent): boolean =>
+            e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r';
 
-        return () => document.removeEventListener('keydown', handler);
+        const handler = (e: KeyboardEvent) => isRandomMoveShortcut(e) && fetchMove(moves);
+
+        document.addEventListener('keyup', handler);
+
+        return () => document.removeEventListener('keyup', handler);
     });
 
     useEffect(() => {
