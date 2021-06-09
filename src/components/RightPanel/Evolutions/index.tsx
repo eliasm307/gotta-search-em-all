@@ -1,30 +1,32 @@
 import React from 'react';
-import Container from './styles';
-import EvolutionSprite from './EvolutionSprite';
+
 import { ChangePokemonIndex } from '../../shared/types';
+import EvolutionSprite from './EvolutionSprite';
+import Container from './styles';
 
 interface EvolutionProps {
-    evolutionSprites: string[];
-    evolutionNames: string[];
     changePokemonIndex: ChangePokemonIndex;
+    evolutionNames: string[];
+    evolutionSprites: string[];
 }
 
 const Evolutions = ({ evolutionSprites, evolutionNames, changePokemonIndex }: EvolutionProps) => {
-    const sprite1 = evolutionSprites[0];
-    const sprite2 = evolutionSprites[1];
-    const sprite3 = evolutionSprites[2];
+    const evolutionSpritesJSX: React.ReactNode[] = evolutionSprites.map((sprite, index) => {
+        const stage = 'I'.repeat(index);
+        const name = evolutionNames[index];
 
-    const name1 = evolutionNames[0];
-    const name2 = evolutionNames[1];
-    const name3 = evolutionNames[2];
+        return (
+            <EvolutionSprite
+                key={stage}
+                image={sprite}
+                stage={stage}
+                name={name}
+                changePokemonIndex={changePokemonIndex}
+            />
+        );
+    });
 
-    return (
-        <Container>
-            <EvolutionSprite image={sprite1} stage="I" name={name1} changePokemonIndex={changePokemonIndex} />
-            <EvolutionSprite image={sprite2} stage="II" name={name2} changePokemonIndex={changePokemonIndex} />
-            <EvolutionSprite image={sprite3} stage="III" name={name3} changePokemonIndex={changePokemonIndex} />
-        </Container>
-    );
+    return <Container>{evolutionSpritesJSX}</Container>;
 };
 
 export default Evolutions;
