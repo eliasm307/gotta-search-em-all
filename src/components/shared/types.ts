@@ -1,4 +1,6 @@
 export interface PokemonProps {
+    evolutionNames: string[];
+    evolutionSprites: string[];
     pokemonData: {
         name: string;
         sprites: {
@@ -20,22 +22,20 @@ export interface PokemonProps {
     };
     pokemonDescriptions: string[];
     speciesData: SpeciesDataProps;
-    evolutionSprites: string[];
-    evolutionNames: string[];
 }
 
 export interface SpeciesDataProps {
-    flavor_text_entries: FlavorTextEntriesProps[];
     evolution_chain: {
         url: string;
     };
+    flavor_text_entries: FlavorTextEntriesProps[];
 }
 
 interface FlavorTextEntriesProps {
+    flavor_text: string;
     language: {
         name: string;
     };
-    flavor_text: string;
 }
 
 export interface TypeProps {
@@ -45,10 +45,10 @@ export interface TypeProps {
 }
 
 export interface Stat {
+    base_stat: number;
     stat: {
         name: string;
     };
-    base_stat: number;
 }
 
 export interface MovesProps {
@@ -67,16 +67,16 @@ export interface VersionGroupDetails {
 }
 
 export interface MoveInfoProps {
-    name: string;
-    learnedAt: string | number;
     accuracy: number;
     damageClass: string;
+    effectDescription: string;
+    learnMethod: string;
+    learnedAt: string | number;
+    moveDescription: string;
+    name: string;
     power: number;
     pp: number;
     type: string;
-    effectDescription: string;
-    learnMethod: string;
-    moveDescription: string;
 }
 
 // functions
