@@ -16,8 +16,20 @@ const Pokedex = () => {
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.code === 'ArrowLeft') changePokemonIndex(pokemonIndex - 1);
-            else if (e.code === 'ArrowRight') changePokemonIndex(pokemonIndex + 1);
+            switch (e.code) {
+                case 'ArrowLeft':
+                case 'ArrowDown':
+                    changePokemonIndex(pokemonIndex - 1);
+                    break;
+
+                case 'ArrowRight':
+                case 'ArrowUp':
+                    changePokemonIndex(pokemonIndex + 1);
+                    break;
+
+                default:
+                // do nothing
+            }
         };
 
         document.addEventListener('keyup', handler);
