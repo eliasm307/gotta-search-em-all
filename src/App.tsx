@@ -1,11 +1,13 @@
-import React from 'react';
-import { Global } from '@emotion/core';
+import Footer from 'components/Footer';
 import { ThemeProvider } from 'emotion-theming';
+import React from 'react';
+
+import { Global } from '@emotion/core';
+import styled from '@emotion/styled';
 
 import Container from './AppStyles';
 import Pokedex from './components/Pokedex';
 import { theme } from './components/shared';
-import Footer from 'components/Footer';
 import globalStyles from './globaStyles';
 
 const App = () => {
@@ -13,11 +15,14 @@ const App = () => {
         <ThemeProvider theme={theme}>
             <Container>
                 <Global styles={globalStyles} />
-                <h1>
-                    Gotta <span className="red">search'em</span> all
-                </h1>
-                <Pokedex />
-                <Footer />
+
+                <div>
+                    <h1>
+                        Gotta <span className="red">search'em</span> all
+                    </h1>
+                    <Pokedex />
+                    <Footer />
+                </div>
             </Container>
         </ThemeProvider>
     );
