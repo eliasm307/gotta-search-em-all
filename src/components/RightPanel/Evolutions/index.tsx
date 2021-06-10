@@ -60,25 +60,27 @@ const PreviewDataView = ({ data }: PreviewDataViewProps) => {
     );
 };
 
-const usePreviewData = () => {
+const usePreviewData = (evolutionNames: string[]) => {
     const loadPokemonPreviewData = useCallback(async (pokemonName: string): Promise<PokemonPreviewData | undefined> => {
-        const pokemonOutputData: any | undefined = await fetch(`${pokemonAPI}pokemon/${pokemonName}`).then((response) =>
+        const pokemonData: any | undefined = await fetch(`${pokemonAPI}pokemon/${pokemonName}`).then((response) =>
             response.json(),
         );
 
-        if (!pokemonOutputData) {
+        if (!pokemonData) {
             console.warn(`There was an issue getting pokemon data for pokemon with name ${pokemonName}`);
             return;
         }
 
         // todo type this properly and account for undefineds
-        const speciesRequest = pokemonOutputData?.species?.url;
+        const speciesRequest = pokemonData?.species?.url;
 
         const speciesData: SpeciesData = await fetch(speciesRequest).then((response) => response.json());
 
+        // ? confirm this works
+        console.log({ formDescriptions: speciesData.form_descriptions });
         const formDescription = speciesData.form_descriptions.find((desc) => desc.language.name === 'en');
 
-        const { name, types } = pokemonOutputData;
+        const { name, types } = pokemonData;
 
         const previewData: PokemonPreviewData = {
             name,
@@ -99,16 +101,21 @@ const usePreviewData = () => {
             setPreviewData(data);
         });
     }, [evolutionNames, loadPokemonPreviewData]);
+
+    return previewData;
 };
 
 const Evolutions = ({ evolutionSprites, evolutionNames, changePokemonIndex }: Props) => {
+    // todo use hook
+    const previewData: (PokemonPreviewData | undefined)[] | undefined = usePreviewData(evolutionNames);
+
     const evolutionSpritesJSX: React.ReactNode[] = useMemo(
         () =>
             evolutionSprites.map((sprite, index) => {
                 const stage = 'I'.repeat(index + 1);
                 const name = evolutionNames[index];
                 const data = previewData && previewData[index];
-                console.log({ stage, name, data });
+                // console.log({ stage, name, data });
                 return (
                     <>
                         <div key={stage} data-tip={stage} data-for={stage}>
@@ -120,13 +127,13 @@ const Evolutions = ({ evolutionSprites, evolutionNames, changePokemonIndex }: Pr
                             />
                         </div>
                         <ReactTooltip id={stage} place="right" effect="float" type="light">
-                            xsx
+                            Preview
                             <PreviewDataView data={data} />
                         </ReactTooltip>
                     </>
                 );
             }),
-        [changePokemonIndex, evolutionNames, evolutionSprites],
+        [changePokemonIndex, evolutionNames, evolutionSprites, previewData],
     );
 
     return <Container>{evolutionSpritesJSX}</Container>;
